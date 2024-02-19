@@ -30,7 +30,7 @@ func (r *CourseRepository) CreateCourse(course models.Course) (int64, error) {
 	defer statement.Close()
 
 	var lastInsertID int64
-	err = statement.QueryRow(course.Description, course.CourseProgram).Scan(&lastInsertID)
+	err = statement.QueryRow(utils.RemoveAccents(course.Description), utils.RemoveAccents(course.CourseProgram)).Scan(&lastInsertID)
 	if err != nil {
 		return 0, err
 	}
@@ -219,4 +219,53 @@ func (r *CourseRepository) GetCourseByID(ctx context.Context, id uint64) (models
 	course.Students = students
 
 	return course, nil
+}
+
+func (r *CourseRepository) GetCoursesByStudent(ctx context.Context, studentCode int64) ([]models.Course, error) {
+	query := `
+        SELECT
+			c.codigo,
+            c.descricao,
+			c.ementa
+        FROM
+            curso c
+        JOIN
+			curso_aluno cs ON c.codigo = cs.codigo_curso
+        WHERE
+            cs.codigo_aluno = $1
+    `
+
+	stmt, err := r.db.PrepareContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer stmt.Close()
+
+	rows, err := stmt.QueryContext(ctx, studentCode)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var courses []models.Course
+
+	for rows.Next() {
+		var course models.Course
+
+		if err := rows.Scan(
+			&course.Code,
+			&course.Description,
+			&course.CourseProgram,
+		); err != nil {
+			return nil, err
+		}
+
+		courses = append(courses, course)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return courses, nil
 }

@@ -5,7 +5,7 @@ import "errors"
 type Student struct {
 	Code    int64    `json:"code,omitempty"`
 	Name    string   `json:"name,omitempty"`
-	Courses []Course `json:"courses,omitempty"`
+	Courses []Course `json:"courses"`
 }
 
 func (student *Student) Prepare() error {

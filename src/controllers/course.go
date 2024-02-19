@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"sync"
 
 	"github.com/gorilla/mux"
 	"github.com/mfsaraujo2014/apicadastroalunocurso/src/answers"
@@ -39,22 +40,43 @@ func CreateCourse(courseRepo *repository.CourseRepository) http.HandlerFunc {
 	}
 }
 
-func GetCourses(courseRepo *repository.CourseRepository) http.HandlerFunc {
+func GetCourses(courseRepo *repository.CourseRepository, studentRepo *repository.StudentRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		var filtersInput models.FiltersInput
+		query := r.URL.Query()
+		fmt.Println(query)
+		searchTerm := query.Get("descricao")
+		fmt.Println("searchTerm: ", searchTerm)
 
-		err := json.NewDecoder(r.Body).Decode(&filtersInput)
-		if err != nil {
-			answers.Erro(w, http.StatusBadRequest, fmt.Errorf("failed to decode request body: %v", err))
-			return
+		var filters []models.Filter
+		if searchTerm != "" {
+			filter := models.Filter{
+				Key:   "descricao",
+				Value: searchTerm,
+			}
+			filters = append(filters, filter)
 		}
 
-		courses, err := courseRepo.GetCourses(ctx, filtersInput.Skip, filtersInput.Take, filtersInput.Filters)
+		courses, err := courseRepo.GetCourses(ctx, 0, 0, filters)
 		if err != nil {
 			answers.Erro(w, http.StatusInternalServerError, err)
 			return
 		}
+
+		var wg sync.WaitGroup
+		wg.Add(len(courses))
+		for i := range courses {
+			go func(i int) {
+				defer wg.Done()
+				students, err := studentRepo.GetStudentsByCourse(ctx, courses[i].Code)
+				if err != nil {
+					answers.Erro(w, http.StatusInternalServerError, err)
+					return
+				}
+				courses[i].Students = students
+			}(i)
+		}
+		wg.Wait()
 
 		answers.JSON(w, http.StatusOK, courses)
 	}

@@ -27,11 +27,11 @@ func main() {
 
 	r := mux.NewRouter()
 	r.HandleFunc("/courses", controllers.CreateCourse(courseRepo)).Methods(http.MethodPost)
-	r.HandleFunc("/courses", controllers.GetCourses(courseRepo)).Methods(http.MethodGet)
+	r.HandleFunc("/courses", controllers.GetCourses(courseRepo, studentRepo)).Methods(http.MethodGet)
 	r.HandleFunc("/courses/{courseID}", controllers.GetCourseByID(courseRepo)).Methods(http.MethodGet)
 	r.HandleFunc("/courses/{courseID}", controllers.UpdateCourse(courseRepo)).Methods(http.MethodPut)
 	r.HandleFunc("/students", controllers.CreateStudent(studentRepo)).Methods(http.MethodPost)
-	r.HandleFunc("/students", controllers.GetStudents(studentRepo)).Methods(http.MethodGet)
+	r.HandleFunc("/students", controllers.GetStudents(studentRepo, courseRepo)).Methods(http.MethodGet)
 	r.HandleFunc("/students/{studentID}", controllers.GetStudentByID(studentRepo)).Methods(http.MethodGet)
 	r.HandleFunc("/students/{studentID}", controllers.UpdateStudent(studentRepo)).Methods(http.MethodPut)
 	r.HandleFunc("/enrollments", controllers.EnrollStudent(courseRepo, studentRepo, enrollmentRepo)).Methods(http.MethodPost)

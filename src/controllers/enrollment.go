@@ -28,7 +28,7 @@ func EnrollStudent(courseRepo *repository.CourseRepository, studentRepo *reposit
 			return
 		}
 		if len(course.Students) >= 10 {
-			answers.Erro(w, http.StatusBadRequest, errors.New("o curso está cheio"))
+			answers.Erro(w, http.StatusBadRequest, errors.New("O curso esta cheio"))
 			return
 		}
 
@@ -38,12 +38,12 @@ func EnrollStudent(courseRepo *repository.CourseRepository, studentRepo *reposit
 			return
 		}
 		if len(student.Courses) >= 3 {
-			answers.Erro(w, http.StatusBadRequest, errors.New("o aluno já está matriculado em 3 cursos"))
+			answers.Erro(w, http.StatusBadRequest, errors.New("O aluno ja esta matriculado em 3 cursos"))
 			return
 		}
 		for _, course := range student.Courses {
 			if course.Code == int64(enrollment.CourseCode) {
-				answers.Erro(w, http.StatusBadRequest, errors.New("o aluno já está matriculado neste curso"))
+				answers.Erro(w, http.StatusBadRequest, errors.New("O aluno ja esta matriculado neste curso"))
 				return
 			}
 		}

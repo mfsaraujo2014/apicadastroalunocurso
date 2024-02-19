@@ -205,3 +205,50 @@ func (r *StudentRepository) GetStudentByID(ctx context.Context, id uint64) (mode
 
 	return student, nil
 }
+
+func (r *StudentRepository) GetStudentsByCourse(ctx context.Context, courseCode int64) ([]models.Student, error) {
+	query := `
+        SELECT
+            s.codigo,
+            s.nome
+        FROM
+            aluno s
+        JOIN
+			curso_aluno cs ON s.codigo = cs.codigo_aluno
+        WHERE
+            cs.codigo_curso = $1
+    `
+
+	stmt, err := r.db.PrepareContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer stmt.Close()
+
+	rows, err := stmt.QueryContext(ctx, courseCode)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var students []models.Student
+
+	for rows.Next() {
+		var student models.Student
+
+		if err := rows.Scan(
+			&student.Code,
+			&student.Name,
+		); err != nil {
+			return nil, err
+		}
+
+		students = append(students, student)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return students, nil
+}

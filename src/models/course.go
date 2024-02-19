@@ -8,7 +8,7 @@ type Course struct {
 	Code          int64     `json:"code,omitempty"`
 	Description   string    `json:"description,omitempty"`
 	CourseProgram string    `json:"courseprogram,omitempty"`
-	Students      []Student `json:"students,omitempty"`
+	Students      []Student `json:"students"`
 }
 
 func (course *Course) Prepare() error {
