@@ -17,7 +17,7 @@ func (student *Student) Prepare() error {
 
 func (student *Student) validate() error {
 	if student.Name == "" {
-		return errors.New("O Nome é obrigatório e não pode estar em branco")
+		return errors.New("O Nome e obrigatorio e nao pode estar em branco")
 	}
 	return nil
 }

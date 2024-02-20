@@ -22,6 +22,11 @@ func EnrollStudent(courseRepo *repository.CourseRepository, studentRepo *reposit
 			return
 		}
 
+		if erro := enrollment.Prepare(); erro != nil {
+			answers.Erro(w, http.StatusBadRequest, erro)
+			return
+		}
+
 		course, err := courseRepo.GetCourseByID(ctx, enrollment.CourseCode)
 		if err != nil {
 			answers.Erro(w, http.StatusInternalServerError, err)

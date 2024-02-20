@@ -6,6 +6,9 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/golang-migrate/migrate/v4"
+	"github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 	_ "github.com/lib/pq"
 	"github.com/mfsaraujo2014/apicadastroalunocurso/src/controllers"
 	"github.com/mfsaraujo2014/apicadastroalunocurso/src/repository"
@@ -15,11 +18,27 @@ import (
 )
 
 func main() {
-	db, err := sql.Open("postgres", "postgres://postgres:9144@localhost:2222/postgres?sslmode=disable")
+	db, err := sql.Open("postgres", "host=localhost port=5432 user=postgres password=9144 dbname=postgres sslmode=disable")
 	if err != nil {
 		log.Fatalf("db: failed to connect./n%s", err)
 	}
 	defer db.Close()
+
+	driver, err := postgres.WithInstance(db, &postgres.Config{})
+	if err != nil {
+		log.Fatalf("failed to get postgres driver instance: %v", err)
+	}
+
+	m, err := migrate.NewWithDatabaseInstance(
+		"file://./migrations",
+		"postgres", driver)
+	if err != nil {
+		log.Fatalf("failed to create migrate instance: %v", err)
+	}
+
+	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
+		log.Fatalf("failed to apply migrations: %v", err)
+	}
 
 	courseRepo := repository.NewCourseRepository(db)
 	studentRepo := repository.NewStudentRepository(db)

@@ -44,9 +44,7 @@ func GetCourses(courseRepo *repository.CourseRepository, studentRepo *repository
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		query := r.URL.Query()
-		fmt.Println(query)
 		searchTerm := query.Get("descricao")
-		fmt.Println("searchTerm: ", searchTerm)
 
 		var filters []models.Filter
 		if searchTerm != "" {

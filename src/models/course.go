@@ -20,7 +20,10 @@ func (course *Course) Prepare() error {
 
 func (course *Course) validate() error {
 	if course.Description == "" {
-		return errors.New("A Descricao é obrigatória e não pode estar em branco")
+		return errors.New("A Descricao e obrigatoria e nao pode estar em branco")
+	}
+	if course.CourseProgram == "" {
+		return errors.New("A Ementa e obrigatoria e nao pode estar em branco")
 	}
 	return nil
 }

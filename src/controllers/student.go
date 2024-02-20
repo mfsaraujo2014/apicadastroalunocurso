@@ -46,9 +46,7 @@ func GetStudents(studentRepo *repository.StudentRepository, courseRepo *reposito
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		query := r.URL.Query()
-		fmt.Println(query)
 		searchTerm := query.Get("nome")
-		fmt.Println("searchTerm: ", searchTerm)
 
 		var filters []models.Filter
 		if searchTerm != "" {

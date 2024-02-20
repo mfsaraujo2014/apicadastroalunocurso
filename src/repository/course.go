@@ -92,6 +92,8 @@ func filterCourses(filters []models.Filter, query string, params []interface{}) 
 		}
 	}
 
+	query += " ORDER BY codigo"
+
 	return query, params
 }
 
@@ -102,15 +104,9 @@ func (r *CourseRepository) GetCourses(ctx context.Context, skip, take int64, fil
 
 	query, params = filterCourses(filters, query, params)
 
-	fmt.Println(query)
-
 	if skip != 0 || take != 0 {
 		query += ` LIMIT $1 OFFSET $2;`
 		params = append(params, take, skip)
-	}
-
-	for _, param := range params {
-		fmt.Println("params: ", param)
 	}
 
 	stmt, err := r.db.PrepareContext(ctx, query)
