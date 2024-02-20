@@ -16,3 +16,14 @@ CREATE TABLE IF NOT EXISTS curso_aluno (
     FOREIGN KEY (codigo_aluno) REFERENCES aluno(codigo),
     FOREIGN KEY (codigo_curso) REFERENCES curso(codigo)
 );
+
+INSERT INTO aluno (nome) VALUES
+    ('Matheus'),
+    ('Felipe'),
+    ('JOAO PAULO MANTOVANI'),
+    ('Maria Clara Almeida');
+
+INSERT INTO curso (descricao, ementa) VALUES
+    ('Curso 1', 'Ementa do Curso 1'),
+    ('Curso 2', 'Ementa do Curso 2'),
+    ('Curso 3', 'Ementa do Curso 3');
