@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"strconv"
 
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
@@ -15,10 +17,28 @@ import (
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
 )
 
 func main() {
-	db, err := sql.Open("postgres", "host=localhost port=5432 user=postgres password=9144 dbname=postgres sslmode=disable")
+	if err := godotenv.Load(); err != nil {
+		log.Fatalf("failed to load env file: %v", err)
+	}
+
+	dbHost := os.Getenv("DB_HOST")
+	dbPort := os.Getenv("DB_PORT")
+	dbUser := os.Getenv("DB_USER")
+	dbPassword := os.Getenv("DB_PASSWORD")
+	dbName := os.Getenv("DB_NAME")
+
+	apiPort, err := strconv.Atoi(os.Getenv("API_PORT"))
+	if err != nil {
+		apiPort = 9000
+	}
+
+	dbURI := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", dbHost, dbPort, dbUser, dbPassword, dbName)
+
+	db, err := sql.Open("postgres", dbURI)
 	if err != nil {
 		log.Fatalf("db: failed to connect./n%s", err)
 	}
@@ -59,6 +79,6 @@ func main() {
 	allowedOrigins := handlers.AllowedOrigins([]string{"*"})
 	allowedMethods := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS"})
 
-	fmt.Printf("Escutando na porta %d", 9001)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", 9001), handlers.CORS(allowedHeaders, allowedOrigins, allowedMethods)(r)))
+	fmt.Printf("Escutando na porta %d", apiPort)
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", apiPort), handlers.CORS(allowedHeaders, allowedOrigins, allowedMethods)(r)))
 }
