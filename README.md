@@ -27,7 +27,7 @@ Siga estas etapas para configurar e executar o projeto em sua máquina local:
     DB_USER=postgres
     DB_PASSWORD=sua-senha-secreta
     DB_NAME=postgres
-    API_PORT=9000
+    API_PORT=9001
 
 3. **Execute o seguinte comando para instalar as dependências do projeto:**
 
@@ -48,7 +48,7 @@ Siga estas etapas para configurar e executar o projeto em sua máquina local:
 
 **Uso da API**
 
-A API estará disponível em http://localhost:9000. Consulte a documentação da API para obter informações sobre os endpoints disponíveis e como usá-los.
+A API estará disponível em http://localhost:9001. Consulte a documentação da API para obter informações sobre os endpoints disponíveis e como usá-los.
 
 **Contribuindo**
 
